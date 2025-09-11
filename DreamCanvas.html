@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>梦想画布</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style type="text/tailwindcss">
+      :root {
+        --primary-color: #38e07b;
+        --secondary-color: #1a2e22;
+        --background-color: #121212;
+        --text-primary: #e0e0e0;
+        --text-secondary: #a0a0a0;
+        --accent-color: #6ee7b7;
+      }
+      body {
+        font-family: 'Spline Sans', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+      }
+    </style>
+</head>
+<body class="bg-[var(--background-color)] text-[var(--text-primary)]">
+<div class="relative flex size-full min-h-screen flex-col overflow-x-hidden">
+<div class="flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--primary-color)]/20 px-10 py-4">
+<div class="flex items-center gap-4">
+<div class="text-[var(--primary-color)]">
+<svg class="h-8 w-8" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold leading-tight">梦想画布</h2>
+</div>
+
+<div class="flex flex-1 items-center justify-end gap-4">
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-[var(--secondary-color)] text-[var(--text-primary)] transition-colors hover:bg-[var(--primary-color)]/20">
+<span class="material-symbols-outlined"> help </span>
+</button>
+<div class="h-10 w-10 rounded-full bg-cover bg-center bg-no-repeat" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCmQ4Agoht4qldAXkyx7YCSoh2sA85mJnT1XXqV6PtD6ez8J3d_hM1aiyUH_PuKf6Ery0-cJWg3eDpWHeiuupoSA4r91Ae-kQyLQwSmBdIm5BRWEmhIg7-eAQqu4g6ni-pZgh5FTlawSYVHP207Gc6pTC8n2AVIaiN8xRhyfoLVwmV0HJDqJ3riFvd431A-pvtMmdgB7ON-x0PJyns9Ek0zqpkMhWgTWy6tLcmlRyrlF6gHHz6Zfb6q1LG8QXWZUdbp5ow49Bj0d8SP");'></div>
+</div>
+</header>
+<main class="flex flex-1 items-center justify-center py-12">
+<div class="w-full max-w-lg px-4">
+<div class="text-center">
+<h1 class="text-4xl font-extrabold text-[var(--primary-color)] mb-4 leading-tight">你梦想成为什么？</h1>
+<p class="text-lg text-[var(--text-secondary)] leading-relaxed">分享你的愿望，让我们一起构想你的未来！</p>
+</div>
+<form action="/generate" method="post" enctype="multipart/form-data">
+    <label for="photo-upload" class="mt-8 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--primary-color)]/30 bg-[var(--secondary-color)] p-8 text-center transition-colors hover:border-[var(--primary-color)]/50 hover:bg-[var(--primary-color)]/10">
+        <div class="mb-4 h-48 w-48 rounded-full bg-cover bg-center bg-no-repeat" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDBJ0smwHNeZX-ZFfE0iOQ9whtb6wfwE9yad1u2HEcDJJ0_Dz40aJ0WfNi1x4sxdIRh4BdicSqEGGSTk5cl2Pdsbk-qdP_HmFlpN9sIikf1xPFkFVlfiMvkJ5XQzmo5sOEHVyElvAtspAsy4l-qdqkEPeuUAz9M6PcRdYWdt7Ti5ZfpiwwKrQRypM008DsAL1LYt54k2K0H1CdXZ4YCkpG2PIXi907p02UFkKs5ptvD1IIM47DzSoou7KXLPFYgejboG7FNstlZHdEE");'></div>
+        <p class="font-semibold text-[var(--text-primary)]">上传照片</p>
+        <p class="text-sm text-[var(--text-secondary)]">点击上传或拖放</p>
+    </label>
+    <input type="file" id="photo-upload" name="photo" class="hidden" accept="image/*" required>
+    <div class="mt-8 space-y-6">
+        <div class="flex flex-col">
+            <label class="mb-2 font-semibold text-[var(--text-secondary)]" for="name">你的名字</label>
+            <input class="form-input w-full rounded-full border border-[var(--primary-color)]/30 bg-[var(--secondary-color)] px-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/50 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]" id="name" name="name" placeholder="例如, 张三" value="" required/>
+        </div>
+        <div class="flex flex-col">
+            <label class="mb-2 font-semibold text-[var(--text-secondary)]" for="dream">描述你的梦想</label>
+            <textarea class="form-textarea w-full rounded-2xl border border-[var(--primary-color)]/30 bg-[var(--secondary-color)] px-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/50 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]" id="dream" name="dream" placeholder="例如, 成为一名宇航员，探索星空..." rows="4" required></textarea>
+        </div>
+    </div>
+    <div class="mt-8 flex justify-center">
+        <button type="submit" class="rounded-full bg-[var(--primary-color)] px-8 py-3 font-semibold text-[var(--background-color)] transition-colors duration-300 hover:bg-[var(--accent-color)]">
+            <span class="truncate">可视化我的梦想</span>
+        </button>
+    </div>
+</form>
+</div>
+</main>
+</div>
+</div>
+
+</body></html>>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>织梦者</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+    :root {
+      --primary-color: #38e07b;
+      --secondary-color: #1a2e22;
+      --background-color: #121212;
+      --text-primary: #e0e0e0;
+      --text-secondary: #a0a0a0;
+      --accent-color: #6ee7b7;
+    }
+    body {
+      font-family: 'Spline Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background-color)] text-[var(--text-primary)]">
+<div class="relative flex size-full min-h-screen flex-col overflow-x-hidden">
+<div class="flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--secondary-color)] px-10 py-5">
+<div class="flex items-center gap-3 text-white">
+<svg class="h-8 w-8 text-[var(--primary-color)]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v4h4v2h-4v4h-2v-4H7v-2h4v-4z"></path>
+</svg>
+<h2 class="text-xl font-bold leading-tight tracking-tighter">织梦者</h2>
+</div>
+
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-[var(--text-secondary)] hover:text-white transition-colors" href="#">首页</a>
+</nav>
+
+<div class="flex items-center gap-4">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-5 bg-transparent border border-[var(--primary-color)] text-[var(--primary-color)] text-sm font-semibold leading-normal tracking-wide hover:bg-[var(--primary-color)] hover:text-[var(--background-color)] transition-colors duration-300">
+<span class="truncate">登录</span>
+</button>
+</div>
+</header>
+<main class="flex flex-1 justify-center items-center px-4 py-10 sm:px-6 lg:px-8">
+<div class="w-full max-w-4xl text-center">
+<div class="relative rounded-2xl overflow-hidden shadow-2xl">
+<img alt="Inspiring landscape" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdZZhE8pEA9vf3KUfCEqA2h4ZL_4WOFFEJgJOXJaMOz9u_vduyMNLtESXEdJVy3rbr8At9MTTpmIRS3sPy6MPcdUhUEByLHtV-_Mz1ETawj7iWATk4yBI3df4GA5iRsLR7w1XKnfDj6Kw1wCQdftPjYKpiQoki3SDRWMfxnY4Tw9Uq38h6mZWL37TeEqWF40DMZGs_n6aWdQq5LiOvtrjNq8FcSpMCcd3vb8Q167B5JYTyQn8nUAswe_h1eWab2IYGeXgrsFiroW6J"/>
+<div class="relative flex min-h-[520px] flex-col gap-8 items-center justify-center p-8 bg-black/50">
+<div class="flex flex-col gap-4">
+<h1 class="text-white text-5xl md:text-7xl font-extrabold tracking-tighter drop-shadow-lg">
+                          欢迎来到织梦者
+                        </h1>
+<h2 class="text-white/90 text-lg md:text-xl max-w-2xl mx-auto drop-shadow-md">
+                          可视化你的未来，激发灵感，实现你的梦想。让我们开始编织你的成功之路！
+                        </h2>
+</div>
+<button onclick="window.location.href='DreamCanvas.html'" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-[var(--primary-color)] text-[var(--background-color)] text-lg font-bold leading-normal tracking-wide shadow-lg hover:bg-[var(--accent-color)] transition-colors duration-300 transform hover:scale-105">
+<span class="truncate">开始你的梦想</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+
+</body></html>
