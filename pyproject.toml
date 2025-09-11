@@ -1,0 +1,21 @@
+# pyproject.toml
+[project]
+name = "dreamweaver"
+version = "0.1.0"
+description = "DreamWeaver application using Gemini API"
+# Add to pyproject.toml
+dependencies = [
+    "flask>=2.0.0",
+    "google-generativeai>=0.3.0",
+    "werkzeug>=2.0.0",
+    "python-dotenv>=1.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
