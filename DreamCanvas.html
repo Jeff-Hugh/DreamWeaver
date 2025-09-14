@@ -53,7 +53,7 @@
 </div>
 <form action="/generate" method="post" enctype="multipart/form-data">
     <label for="photo-upload" class="mt-8 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--primary-color)]/30 bg-[var(--secondary-color)] p-8 text-center transition-colors hover:border-[var(--primary-color)]/50 hover:bg-[var(--primary-color)]/10">
-        <div class="mb-4 h-48 w-48 rounded-full bg-cover bg-center bg-no-repeat" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDBJ0smwHNeZX-ZFfE0iOQ9whtb6wfwE9yad1u2HEcDJJ0_Dz40aJ0WfNi1x4sxdIRh4BdicSqEGGSTk5cl2Pdsbk-qdP_HmFlpN9sIikf1xPFkFVlfiMvkJ5XQzmo5sOEHVyElvAtspAsy4l-qdqkEPeuUAz9M6PcRdYWdt7Ti5ZfpiwwKrQRypM008DsAL1LYt54k2K0H1CdXZ4YCkpG2PIXi907p02UFkKs5ptvD1IIM47DzSoou7KXLPFYgejboG7FNstlZHdEE");'></div>
+        <div id="image-preview" class="mb-4 h-48 w-48 rounded-full bg-cover bg-center bg-no-repeat" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDBJ0smwHNeZX-ZFfE0iOQ9whtb6wfwE9yad1u2HEcDJJ0_Dz40aJ0WfNi1x4sxdIRh4BdicSqEGGSTk5cl2Pdsbk-qdP_HmFlpN9sIikf1xPFkFVlfiMvkJ5XQzmo5sOEHVyElvAtspAsy4l-qdqkEPeuUAz9M6PcRdYWdt7Ti5ZfpiwwKrQRypM008DsAL1LYt54k2K0H1CdXZ4YCkpG2PIXi907p02UFkKs5ptvD1IIM47DzSoou7KXLPFYgejboG7FNstlZHdEE");'></div>
         <p class="font-semibold text-[var(--text-primary)]">上传照片</p>
         <p class="text-sm text-[var(--text-secondary)]">点击上传或拖放</p>
     </label>
@@ -78,5 +78,18 @@
 </main>
 </div>
 </div>
+
+<script>
+  document.getElementById('photo-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('image-preview').style.backgroundImage = `url(${e.target.result})`;
+      }
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
 
 </body></html>>
