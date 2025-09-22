@@ -27,12 +27,12 @@ def uploaded_file(filename):
 @app.route('/generate', methods=['POST'])
 def generate_dream():
     dream = request.form['dream']
-    filename = secure_filename(request.files['file'].filename)
+    filename = secure_filename(request.files['photo'].filename)
     name = request.form['name']
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    request.files['file'].save(filepath)
+    request.files['photo'].save(filepath)
 
     response = generate.generate_dream_image_and_plan(dream, filepath)
     generated_text = ""

@@ -4,7 +4,8 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>织梦者 - 你未来的自己</title>
 <link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries,typography"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
@@ -58,7 +59,7 @@
 </div>
 </header>
 <main class="flex-grow">
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 <div class="text-center mb-12">
 <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white">你未来的自己正在等待！</h2>
 <div class="mt-4 flex items-center justify-center gap-3 text-lg text-[var(--text-secondary)]">
@@ -75,9 +76,12 @@
 <div class="md:col-span-2 p-8 flex flex-col justify-center bg-gradient-to-br from-[var(--secondary-color)] to-black/20">
 <div class="space-y-6">
 <h3 class="text-2xl font-bold text-white leading-tight">恭喜你, {{ name }}!</h3>
-<p class="text-[var(--text-secondary)] leading-relaxed">
-                  {{ generated_text | safe }}
-                </p>
+<div id="generated-text-container" class="text-[var(--text-secondary)] leading-relaxed prose prose-invert"></div>
+                <script>
+                  const generatedText = `{{ generated_text | safe }}`;
+                  document.getElementById('generated-text-container').innerHTML =
+                    marked.parse(generatedText);
+                </script>
 </div>
 </div>
 </div>
