@@ -8,6 +8,9 @@ import uuid
 
 app = Flask(__name__, template_folder='.')
 app.config['UPLOAD_FOLDER'] = 'uploads'
+# Create the uploads directory if it doesn't exist
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 @app.route('/')
 def home():
@@ -52,4 +55,11 @@ def generate_dream():
         return jsonify({'error': 'Something went wrong'}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    # 确保所有必需的模板文件都存在
+    required_files = ['Home.html', 'DreamCanvas.html', 'DreamViewer.html']
+    for file in required_files:
+        if not os.path.exists(file):
+            print(f"Missing required file: {file}")
+            exit(1)
+            
+    app.run(debug=True, port=5001, host='0.0.0.0')

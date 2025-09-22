@@ -3,8 +3,35 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+<<<<<<< HEAD
 # C extensions
 *.so
+=======
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Uploads directory (contains user uploaded files)
+uploads/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Configuration files
+*.env
+.env*
+>>>>>>> 0a25dc7c769b044e17f94595907d1db2ae8c3cff
 
 # Distribution / packaging
 .Python
@@ -23,7 +50,10 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+<<<<<<< HEAD
 MANIFEST
+=======
+>>>>>>> 0a25dc7c769b044e17f94595907d1db2ae8c3cff
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -105,8 +135,13 @@ celerybeat.pid
 env/
 venv/
 ENV/
+<<<<<<< HEAD
 env.bak
 venv.bak
+=======
+env.bak/
+venv.bak/
+>>>>>>> 0a25dc7c769b044e17f94595907d1db2ae8c3cff
 
 # Spyder project settings
 .spyderproject
@@ -126,6 +161,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+<<<<<<< HEAD
 # OS generated files
 .DS_Store
 .DS_Store?
@@ -233,4 +269,6 @@ uploads/
 generated_image_*.png
 
 # package-lock.json
+=======
+>>>>>>> 0a25dc7c769b044e17f94595907d1db2ae8c3cff
 uv.lock
