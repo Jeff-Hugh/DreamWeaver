@@ -88,33 +88,68 @@
 </div>
 </div>
 <div class="mt-12 text-center flex justify-center gap-4">
-<button class="bg-[var(--primary-color)] text-[var(--background-color)] px-8 py-4 rounded-[var(--radius-full)] font-bold text-lg hover:bg-[var(--accent-color)] transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[var(--primary-color)]/20 flex items-center gap-3 mx-auto">
+<button id="share-btn" class="bg-[var(--primary-color)] text-[var(--background-color)] px-8 py-4 rounded-[var(--radius-full)] font-bold text-lg hover:bg-[var(--accent-color)] transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[var(--primary-color)]/20 flex items-center gap-3 mx-auto">
 <span class="material-symbols-outlined">
               share
             </span>
 <span>分享你的梦想</span>
 </button>
-<button id="download-btn" class="bg-gray-700 text-white px-8 py-4 rounded-[var(--radius-full)] font-bold text-lg hover:bg-gray-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-3 mx-auto">
-<span class="material-symbols-outlined">
-              download
-            </span>
-<span>下载图片</span>
-</button>
 </div>
+
+<!-- QR Code Modal -->
+<div id="qr-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style="display: none;">
+  <div class="bg-white p-4 rounded-lg shadow-lg">
+    <img id="qr-code-image" src="" alt="QR Code" />
+  </div>
+</div>
+
+<div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" style="display: none;">
+    <div class="text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-[var(--primary-color)]"></div>
+        <p class="mt-4 text-lg font-semibold text-white">程序正在运行，请稍候...</p>
+    </div>
+</div>
+
 <script>
-  document.getElementById('download-btn').addEventListener('click', function() {
-    const element = document.getElementById('dream-container');
-    html2canvas(element, {
-      backgroundColor: '#1a2e22', // Match the container background
-      useCORS: true // Important for external images
-    }).then(canvas => {
-      const link = document.createElement('a');
-      link.href = canvas.toDataURL('image/png');
-      link.download = 'dream-weaver-vision.png';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  document.getElementById('share-btn').addEventListener('click', function() {
+    document.getElementById('loading-overlay').style.display = 'flex';
+    const imageFilename = '{{ image_filename }}';
+    const generatedText = document.getElementById('generated-text-container').innerText;
+
+    fetch('/share', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        image_filename: imageFilename,
+        text: generatedText
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('loading-overlay').style.display = 'none';
+      if (data.qr_code_url) {
+        const modal = document.getElementById('qr-modal');
+        const qrImage = document.getElementById('qr-code-image');
+        qrImage.src = data.qr_code_url;
+        modal.style.display = 'flex';
+      } else {
+        console.error('Error sharing dream:', data.error);
+        alert('分享失败，请稍后再试。');
+      }
+    })
+    .catch(error => {
+      document.getElementById('loading-overlay').style.display = 'none';
+      console.error('Fetch error:', error);
+      alert('分享请求失败，请检查网络连接。');
     });
+  });
+
+  document.getElementById('qr-modal').addEventListener('click', function(e) {
+    if (e.target.id === 'qr-modal') {
+      this.style.display = 'none';
+    }
   });
 </script>
 </div>

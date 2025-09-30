@@ -5,6 +5,115 @@ import qrcode
 import xml.etree.ElementTree as ET # 用于解析 XML 响应
 import os
 from dotenv import load_dotenv
+from PIL import Image, ImageDraw, ImageFont
+import textwrap
+import uuid
+
+def create_composite_image(image_filename, text):
+    original_image_path = os.path.join("uploads", image_filename)
+    try:
+        original_image = Image.open(original_image_path).convert("RGBA")
+    except FileNotFoundError:
+        print(f"错误：找不到图片文件 {original_image_path}")
+        return None
+
+    # --- Configuration ---
+    text_color = (224, 224, 224)
+    bold_text_color = (255, 255, 255)
+    background_color = (18, 18, 18)
+    font_size = 30
+    padding = 40
+    line_spacing = 15
+    image_text_gap = 30
+    text_block_width = original_image.width # Initial text block width
+
+    # --- Font ---
+    try:
+        # Build absolute path to the font file, assuming it's in the same directory as the script.
+        font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "simhei.ttf"))
+        font = ImageFont.truetype(font_path, font_size)
+        # Load the regular font for bold as well to avoid index errors with single-style font files.
+        bold_font = ImageFont.truetype(font_path, font_size)
+    except IOError:
+        print("警告: 未找到 simhei.ttf 字体或字体文件已损坏/不完整。将使用默认字体。")
+        font = ImageFont.load_default()
+        bold_font = ImageFont.load_default()
+
+    # --- Helper function to render text and calculate height ---
+    def render_and_calculate_text_height(draw, text, start_x, start_y, max_width, render=False):
+        lines = text.replace('**', '').split('\n')
+        
+        wrapped_lines = []
+        for line in lines:
+            # Wrap long lines
+            if not line.strip(): # Keep empty lines for paragraphs
+                wrapped_lines.append('')
+                continue
+            
+            # A simple character-based wrapping logic
+            avg_char_width = font.getbbox("一")[2] if hasattr(font, 'getbbox') else font.getsize("一")[0]
+            chars_per_line = max(1, int(max_width / avg_char_width))
+            wrapped_lines.extend(textwrap.wrap(line, width=chars_per_line, replace_whitespace=False))
+
+        y = start_y
+        x = start_x
+        
+        # Simple markdown parsing for **bold**
+        # This approach splits by `**` and toggles bold state.
+        for line in wrapped_lines:
+            parts = line.split('**')
+            is_bold = False
+            for i, part in enumerate(parts):
+                current_font = bold_font if is_bold else font
+                if render:
+                    draw.text((x, y), part, font=current_font, fill=bold_text_color if is_bold else text_color)
+                
+                if hasattr(current_font, 'getbbox'):
+                    part_width = current_font.getbbox(part)[2]
+                else:
+                    part_width = current_font.getsize(part)[0]
+                x += part_width
+                
+                # Don't toggle bold for the last part
+                if i < len(parts) - 1:
+                    is_bold = not is_bold
+
+            y += font_size + line_spacing
+            x = start_x
+            
+        return y - start_y - line_spacing if wrapped_lines else 0
+
+    # --- Calculate Text Height ---
+    # Create a dummy image to calculate the text block height
+    dummy_draw = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+    text_height = render_and_calculate_text_height(dummy_draw, text, 0, 0, text_block_width, render=False)
+    text_height += padding * 2 # Add top and bottom padding to the text block
+
+    # --- Resize Image to Match Text Height ---
+    image_height = text_height
+    image_width = int(original_image.width * (image_height / original_image.height))
+    resized_image = original_image.resize((image_width, image_height), Image.LANCZOS)
+
+    # --- Create Composite Image ---
+    final_width = image_width + text_block_width + image_text_gap + padding * 2
+    final_height = image_height
+    
+    composite_image = Image.new("RGB", (final_width, final_height), background_color)
+    
+    # 1. Paste resized image
+    composite_image.paste(resized_image, (padding, 0), resized_image)
+
+    # 2. Render text on the final image
+    final_draw = ImageDraw.Draw(composite_image)
+    text_start_x = padding + image_width + image_text_gap
+    render_and_calculate_text_height(final_draw, text, text_start_x, padding, text_block_width, render=True)
+
+    # --- Save new image ---
+    composite_filename = f"composite_{uuid.uuid4()}.png"
+    composite_filepath = os.path.join("uploads", composite_filename)
+    composite_image.save(composite_filepath)
+
+    return composite_filename
 
 def share(filename):
     load_dotenv()
@@ -123,7 +232,13 @@ def share(filename):
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")
-    img.save("share_qrcode.png")  # 保存二维码图片，之后可在你的APP界面显示
-    print("二维码已生成！")
+    
+    # Generate a unique filename for the QR code
+    import uuid
+    qr_filename = f"qr_code_{uuid.uuid4()}.png"
+    qr_filepath = os.path.join("uploads", qr_filename)
+    
+    img.save(qr_filepath)
+    print(f"二维码已生成并保存到: {qr_filepath}")
 
-    return share_url
+    return qr_filename

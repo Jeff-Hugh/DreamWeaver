@@ -1,5 +1,6 @@
 import os
 import generate
+import share
 from flask import Flask, request, render_template, redirect, url_for, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 from PIL import Image
@@ -23,6 +24,30 @@ def dream_canvas():
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/share', methods=['POST'])
+def share_dream():
+    data = request.get_json()
+    image_filename = data.get('image_filename')
+    text = data.get('text')
+
+    if not image_filename or not text:
+        return jsonify({'error': 'Missing image_filename or text'}), 400
+
+    # 1. Create the composite image
+    try:
+        composite_filename = share.create_composite_image(image_filename, text)
+    except Exception as e:
+        print(f"Error creating composite image: {e}")
+        return jsonify({'error': 'Could not create composite image'}), 500
+
+    # 2. Share the composite image and get QR code
+    qr_filename = share.share(composite_filename)
+    if qr_filename:
+        qr_code_url = url_for('uploaded_file', filename=qr_filename, _external=True)
+        return jsonify({'qr_code_url': qr_code_url})
+    else:
+        return jsonify({'error': 'Could not share image'}), 500
 
 @app.route('/generate', methods=['POST'])
 def generate_dream():

@@ -79,6 +79,13 @@
 </div>
 </div>
 
+<div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" style="display: none;">
+    <div class="text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-[var(--primary-color)]"></div>
+        <p class="mt-4 text-lg font-semibold text-white">程序正在运行，请稍候...</p>
+    </div>
+</div>
+
 <script>
   document.getElementById('photo-upload').addEventListener('change', function(e) {
     const file = e.target.files[0];
@@ -89,6 +96,10 @@
       }
       reader.readAsDataURL(file);
     }
+  });
+
+  document.querySelector('form').addEventListener('submit', function() {
+    document.getElementById('loading-overlay').style.display = 'flex';
   });
 </script>
 
