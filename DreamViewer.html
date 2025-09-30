@@ -68,7 +68,8 @@
 <span class="material-symbols-outlined text-[var(--accent-color)]">spark</span>
 </div>
 </div>
-<div class="bg-[var(--secondary-color)] rounded-[var(--radius-2xl)] shadow-2xl shadow-black/30 overflow-hidden border border-white/10">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<div id="dream-container" class="bg-[var(--secondary-color)] rounded-[var(--radius-2xl)] shadow-2xl shadow-black/30 overflow-hidden border border-white/10">
 <div class="grid grid-cols-1 md:grid-cols-5">
 <div class="md:col-span-3">
 <div class="aspect-[4/5] bg-cover bg-center" style="background-image: url('{{ url_for('uploaded_file', filename=image_filename) }}');"></div>
@@ -86,14 +87,36 @@
 </div>
 </div>
 </div>
-<div class="mt-12 text-center">
+<div class="mt-12 text-center flex justify-center gap-4">
 <button class="bg-[var(--primary-color)] text-[var(--background-color)] px-8 py-4 rounded-[var(--radius-full)] font-bold text-lg hover:bg-[var(--accent-color)] transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[var(--primary-color)]/20 flex items-center gap-3 mx-auto">
 <span class="material-symbols-outlined">
               share
             </span>
 <span>分享你的梦想</span>
 </button>
+<button id="download-btn" class="bg-gray-700 text-white px-8 py-4 rounded-[var(--radius-full)] font-bold text-lg hover:bg-gray-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-3 mx-auto">
+<span class="material-symbols-outlined">
+              download
+            </span>
+<span>下载图片</span>
+</button>
 </div>
+<script>
+  document.getElementById('download-btn').addEventListener('click', function() {
+    const element = document.getElementById('dream-container');
+    html2canvas(element, {
+      backgroundColor: '#1a2e22', // Match the container background
+      useCORS: true // Important for external images
+    }).then(canvas => {
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = 'dream-weaver-vision.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  });
+</script>
 </div>
 </main>
 <footer class="bg-black/20 mt-16">
