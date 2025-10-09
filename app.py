@@ -30,13 +30,14 @@ def share_dream():
     data = request.get_json()
     image_filename = data.get('image_filename')
     text = data.get('text')
+    name = data.get('name')
 
-    if not image_filename or not text:
-        return jsonify({'error': 'Missing image_filename or text'}), 400
+    if not image_filename or not text or not name:
+        return jsonify({'error': 'Missing image_filename, text, or name'}), 400
 
     # 1. Create the composite image
     try:
-        composite_filename = share.create_composite_image(image_filename, text)
+        composite_filename = share.create_composite_image(image_filename, text, name)
     except Exception as e:
         print(f"Error creating composite image: {e}")
         return jsonify({'error': 'Could not create composite image'}), 500

@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 import textwrap
 import uuid
 
-def create_composite_image(image_filename, text):
+def create_composite_image(image_filename, text, name):
     original_image_path = os.path.join("uploads", image_filename)
     try:
         original_image = Image.open(original_image_path).convert("RGBA")
@@ -18,14 +18,16 @@ def create_composite_image(image_filename, text):
         return None
 
     # --- Configuration ---
-    text_color = (224, 224, 224)
-    bold_text_color = (255, 255, 255)
-    background_color = (18, 18, 18)
+    text_color = (50, 50, 50)  # Dark grey
+    bold_text_color = (0, 0, 0)  # Black
+    background_color = (245, 245, 245)  # Off-white
     font_size = 30
     padding = 40
     line_spacing = 15
     image_text_gap = 30
     text_block_width = original_image.width # Initial text block width
+    title_top_margin = 60
+    title_bottom_margin = 40
 
     # --- Font ---
     try:
@@ -35,6 +37,7 @@ def create_composite_image(image_filename, text):
         h1_font = ImageFont.truetype(font_path, font_size + 10)
         h2_font = ImageFont.truetype(font_path, font_size + 5)
         h3_font = ImageFont.truetype(font_path, font_size + 2)
+        title_font = ImageFont.truetype(font_path, font_size + 20) # Font for the new title
     except IOError:
         print("警告: 未找到 kaiti.ttf 字体。将使用默认字体。")
         font = ImageFont.load_default()
@@ -42,6 +45,8 @@ def create_composite_image(image_filename, text):
         h1_font = ImageFont.load_default()
         h2_font = ImageFont.load_default()
         h3_font = ImageFont.load_default()
+        title_font = ImageFont.load_default()
+
 
     fonts = {
         'p': font,
@@ -128,19 +133,33 @@ def create_composite_image(image_filename, text):
     image_width = int(original_image.width * (image_height / original_image.height))
     resized_image = original_image.resize((image_width, int(image_height)), Image.LANCZOS)
 
+    # --- Calculate Title Size ---
+    title_text = f"{name}你的梦想一定可以实现，加油吧！"
+    title_bbox = title_font.getbbox(title_text)
+    title_width = title_bbox[2] - title_bbox[0]
+    title_height = title_bbox[3] - title_bbox[1]
+    title_total_height = title_top_margin + title_height + title_bottom_margin
+
     # --- Create Composite Image ---
     final_width = image_width + text_block_width + image_text_gap + padding * 2
-    final_height = int(image_height)
+    final_height = int(image_height) + title_total_height + padding
 
     composite_image = Image.new("RGB", (final_width, final_height), background_color)
-
-    # 1. Paste resized image
-    composite_image.paste(resized_image, (padding, 0), resized_image)
-
-    # 2. Render text on the final image
     final_draw = ImageDraw.Draw(composite_image)
+
+    # 1. Render Title
+    title_x = (final_width - title_width) / 2
+    title_y = title_top_margin
+    final_draw.text((title_x, title_y), title_text, font=title_font, fill=bold_text_color)
+
+    # 2. Paste resized image
+    image_y_offset = title_total_height
+    composite_image.paste(resized_image, (padding, image_y_offset), resized_image)
+
+    # 3. Render text on the final image
     text_start_x = padding + image_width + image_text_gap
-    render_and_calculate_text_height(final_draw, text, text_start_x, padding, text_block_width, render=True)
+    text_start_y = image_y_offset + padding
+    render_and_calculate_text_height(final_draw, text, text_start_x, text_start_y, text_block_width, render=True)
 
     # --- Save new image ---
     composite_filename = f"composite_{uuid.uuid4()}.png"
@@ -310,5 +329,5 @@ if __name__ == "__main__":
 
 **未来，尽在你的指尖，世界因你而安全！**
     '''
-    new_image = create_composite_image(image_filename, text)
+    new_image = create_composite_image(image_filename, text, "开发者")
     print(f"生成的合成图片文件名: {new_image}")
