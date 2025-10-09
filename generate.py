@@ -24,7 +24,6 @@ def generate_dream_image_and_plan(dream: str = "成为一名畅销书作家", im
     * **场景设定:** 根据用户梦想，构建一个具体、生动的未来场景。例如，如果梦想是成为作家，场景可以是在一个阳光明媚的书房里，手捧着自己出版的畅销书；如果梦想是环游世界，场景可以是在异国他乡的标志性建筑前，面带笑容。
     * **风格要求:** 画面风格需积极、明亮、充满成就感和幸福感。可以是写实风格，也可以是带有艺术感的插画风格。
     * **人物状态:** 未来的人物形象要显得更加成熟、自信、充满活力。
-    * **图像偏好:** 图像中不要出现文字、水印或任何标志性符号。
 
     ## **规划实现路径**
     * **要求:** 提供清晰的行动指南
@@ -51,7 +50,7 @@ def generate_dream_image_and_plan(dream: str = "成为一名畅销书作家", im
     image = Image.open(image_path)
 
     response = client.models.generate_content(
-        model="gemini-2.5-flash-image-preview",
+        model="gemini-2.5-flash-image",
         contents=[prompt, image],
     )
 

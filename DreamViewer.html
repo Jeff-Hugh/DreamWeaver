@@ -43,7 +43,7 @@
 <h1 class="text-xl font-bold text-white">织梦者</h1>
 </div>
 <nav class="hidden md:flex items-center gap-8">
-<a class="text-sm font-medium text-[var(--text-secondary)] hover:text-white transition-colors" href="#">首页</a>
+<a class="text-sm font-medium text-[var(--text-secondary)] hover:text-white transition-colors" href="/">首页</a>
 </nav>
 <div class="flex items-center gap-4">
 <button class="relative rounded-full p-2 text-[var(--text-secondary)] hover:bg-[var(--secondary-color)] hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--background-color)] focus:ring-[var(--primary-color)]">
@@ -78,11 +78,9 @@
 <div class="space-y-6">
 <h3 class="text-2xl font-bold text-white leading-tight">恭喜你, {{ name }}!</h3>
 <div id="generated-text-container" class="text-[var(--text-secondary)] leading-relaxed prose prose-invert"></div>
-                <script>
-                  const generatedText = `{{ generated_text | safe }}`;
-                  document.getElementById('generated-text-container').innerHTML =
-                    marked.parse(generatedText);
-                </script>
+<script type="text/template" id="raw-markdown-template">
+{{ generated_text | safe }}
+</script>
 </div>
 </div>
 </div>
@@ -111,10 +109,12 @@
 </div>
 
 <script>
+  const rawMarkdown = document.getElementById('raw-markdown-template').innerHTML;
+  document.getElementById('generated-text-container').innerHTML = marked.parse(rawMarkdown);
+
   document.getElementById('share-btn').addEventListener('click', function() {
     document.getElementById('loading-overlay').style.display = 'flex';
     const imageFilename = '{{ image_filename }}';
-    const generatedText = document.getElementById('generated-text-container').innerText;
 
     fetch('/share', {
       method: 'POST',
@@ -123,7 +123,7 @@
       },
       body: JSON.stringify({
         image_filename: imageFilename,
-        text: generatedText
+        text: rawMarkdown
       }),
     })
     .then(response => response.json())

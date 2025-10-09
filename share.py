@@ -29,77 +29,111 @@ def create_composite_image(image_filename, text):
 
     # --- Font ---
     try:
-        # Build absolute path to the font file, assuming it's in the same directory as the script.
-        font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "simhei.ttf"))
+        font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "kaiti.ttf"))
         font = ImageFont.truetype(font_path, font_size)
-        # Load the regular font for bold as well to avoid index errors with single-style font files.
-        bold_font = ImageFont.truetype(font_path, font_size)
+        bold_font = ImageFont.truetype(font_path, font_size) # Re-using for simplicity
+        h1_font = ImageFont.truetype(font_path, font_size + 10)
+        h2_font = ImageFont.truetype(font_path, font_size + 5)
+        h3_font = ImageFont.truetype(font_path, font_size + 2)
     except IOError:
-        print("警告: 未找到 simhei.ttf 字体或字体文件已损坏/不完整。将使用默认字体。")
+        print("警告: 未找到 kaiti.ttf 字体。将使用默认字体。")
         font = ImageFont.load_default()
         bold_font = ImageFont.load_default()
+        h1_font = ImageFont.load_default()
+        h2_font = ImageFont.load_default()
+        h3_font = ImageFont.load_default()
+
+    fonts = {
+        'p': font,
+        'b': bold_font,
+        'h1': h1_font,
+        'h2': h2_font,
+        'h3': h3_font,
+    }
 
     # --- Helper function to render text and calculate height ---
     def render_and_calculate_text_height(draw, text, start_x, start_y, max_width, render=False):
-        lines = text.replace('**', '').split('\n')
-        
-        wrapped_lines = []
-        for line in lines:
-            # Wrap long lines
-            if not line.strip(): # Keep empty lines for paragraphs
-                wrapped_lines.append('')
-                continue
-            
-            # A simple character-based wrapping logic
-            avg_char_width = font.getbbox("一")[2] if hasattr(font, 'getbbox') else font.getsize("一")[0]
-            chars_per_line = max(1, int(max_width / avg_char_width))
-            wrapped_lines.extend(textwrap.wrap(line, width=chars_per_line, replace_whitespace=False))
-
         y = start_y
-        x = start_x
-        
-        # Simple markdown parsing for **bold**
-        # This approach splits by `**` and toggles bold state.
-        for line in wrapped_lines:
-            parts = line.split('**')
-            is_bold = False
-            for i, part in enumerate(parts):
-                current_font = bold_font if is_bold else font
-                if render:
-                    draw.text((x, y), part, font=current_font, fill=bold_text_color if is_bold else text_color)
+        lines = text.split('\n')
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                y += line_spacing
+                continue
+
+            # Determine line type (heading, list, or paragraph)
+            current_font = fonts['p']
+            line_indent = 0
+            is_list_item = False
+
+            if line.startswith('### '):
+                current_font = fonts['h3']
+                line = line[4:]
+            elif line.startswith('## '):
+                current_font = fonts['h2']
+                line = line[3:]
+            elif line.startswith('# '):
+                current_font = fonts['h1']
+                line = line[2:]
+            elif line.startswith('* ') or line.startswith('- '):
+                is_list_item = True
+                line = line[2:]
+                line_indent = 30 # Indent for list items
+
+            # Wrap the line
+            avg_char_width = current_font.getbbox("一")[2] if hasattr(current_font, 'getbbox') else current_font.getsize("一")[0]
+            chars_per_line = max(1, int((max_width - line_indent) / avg_char_width))
+            wrapped_text = textwrap.wrap(line, width=chars_per_line, replace_whitespace=False)
+
+            # Render wrapped lines
+            for i, wrapped_line in enumerate(wrapped_text):
+                x = start_x + line_indent
+                if i == 0 and is_list_item:
+                    if render:
+                        bullet_radius = 4
+                        bullet_y = y + (current_font.size / 2) - bullet_radius
+                        bullet_x = start_x + (line_indent / 2) - bullet_radius
+                        draw.ellipse(
+                            (bullet_x, bullet_y, bullet_x + bullet_radius * 2, bullet_y + bullet_radius * 2),
+                            fill=text_color
+                        )
                 
-                if hasattr(current_font, 'getbbox'):
-                    part_width = current_font.getbbox(part)[2]
-                else:
-                    part_width = current_font.getsize(part)[0]
-                x += part_width
-                
-                # Don't toggle bold for the last part
-                if i < len(parts) - 1:
+                # Handle bold text within the line
+                parts = wrapped_line.split('**')
+                is_bold = False
+                for part in parts:
+                    font_to_use = fonts['b'] if is_bold else current_font
+                    if render:
+                        draw.text((x, y), part, font=font_to_use, fill=bold_text_color if is_bold else text_color)
+                    
+                    if hasattr(font_to_use, 'getbbox'):
+                        part_width = font_to_use.getbbox(part)[2]
+                    else:
+                        part_width = font_to_use.getsize(part)[0]
+                    x += part_width
                     is_bold = not is_bold
 
-            y += font_size + line_spacing
-            x = start_x
-            
-        return y - start_y - line_spacing if wrapped_lines else 0
+                y += current_font.size + line_spacing
+
+        return y - start_y
 
     # --- Calculate Text Height ---
-    # Create a dummy image to calculate the text block height
     dummy_draw = ImageDraw.Draw(Image.new("RGB", (1, 1)))
     text_height = render_and_calculate_text_height(dummy_draw, text, 0, 0, text_block_width, render=False)
-    text_height += padding * 2 # Add top and bottom padding to the text block
+    text_height += padding * 2
 
     # --- Resize Image to Match Text Height ---
     image_height = text_height
     image_width = int(original_image.width * (image_height / original_image.height))
-    resized_image = original_image.resize((image_width, image_height), Image.LANCZOS)
+    resized_image = original_image.resize((image_width, int(image_height)), Image.LANCZOS)
 
     # --- Create Composite Image ---
     final_width = image_width + text_block_width + image_text_gap + padding * 2
-    final_height = image_height
-    
+    final_height = int(image_height)
+
     composite_image = Image.new("RGB", (final_width, final_height), background_color)
-    
+
     # 1. Paste resized image
     composite_image.paste(resized_image, (padding, 0), resized_image)
 
@@ -242,3 +276,39 @@ def share(filename):
     print(f"二维码已生成并保存到: {qr_filepath}")
 
     return qr_filename
+
+if __name__ == "__main__":
+    # 测试图片生成功能
+    image_filename = "generated_image_3445ead2-4339-49df-a5d2-4c41d6321bb1.png"  # 替换为你的图片文件名
+    text = '''# 规划实现路径
+## 1. 知识储备与技能学习：
+
+- 基础编程： 学习Python、C/C++等编程语言，掌握数据结构与算法。
+- 网络基础： 深入理解TCP/IP协议、网络拓扑、无线安全等。
+- 操作系统： 熟练掌握Linux操作系统，理解其原理和命令行操作。
+- 安全理论： 学习加密技术、逆向工程、渗透测试等安全知识。
+## 2. 实践与经验积累：
+
+- 搭建实验室： 在虚拟机中搭建自己的网络安全实验室，进行模拟攻击和防御练习。
+- 参与CTF竞赛： 参加夺旗赛（CTF），在实战中提升技能，了解最新的攻防技术。
+- 漏洞挖掘： 尝试发现软件或系统中的漏洞，提交给厂商获取经验。
+- 开源项目贡献： 参与网络安全相关的开源项目，与社区交流学习。
+## 3. 建立人脉与寻求机遇：
+
+- 加入安全社区： 积极参与线上和线下的网络安全技术社区，与同行交流。
+- 寻找导师： 寻找行业内的资深专家作为导师，获取指导和建议。
+- 实习与工作： 寻找网络安全公司或部门的实习机会，将理论知识应用于实践。
+## 4. 持续进步与突破：
+
+- 追踪前沿技术： 密切关注网络安全领域的最新动态和技术发展。
+- 保持好奇心： 对未知领域保持探索精神，不断学习新的攻击和防御手段。
+- 法律与道德： 始终遵守法律法规，坚守道德底线，做一名负责任的“白帽黑客”。
+
+# 寄语
+
+你的梦想是探索数字世界的奥秘，用智慧守护网络安全，这是何等壮丽的志向！请相信，你拥有无限的潜力去驾驭这些挑战，成为数字时代的守护者。每一次代码的敲击，每一次难题的攻克，都将是你通往梦想彼岸的坚实阶梯。勇敢地去追求，去创造，去改变！
+
+**未来，尽在你的指尖，世界因你而安全！**
+    '''
+    new_image = create_composite_image(image_filename, text)
+    print(f"生成的合成图片文件名: {new_image}")
