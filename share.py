@@ -134,7 +134,7 @@ def create_composite_image(image_filename, text, name):
     resized_image = original_image.resize((image_width, int(image_height)), Image.LANCZOS)
 
     # --- Calculate Title Size ---
-    title_text = f"{name}你的梦想一定可以实现，加油吧！"
+    title_text = f"{name}，你的梦想一定可以实现，加油吧！"
     title_bbox = title_font.getbbox(title_text)
     title_width = title_bbox[2] - title_bbox[0]
     title_height = title_bbox[3] - title_bbox[1]
