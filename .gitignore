@@ -150,3 +150,6 @@ generated_image_*.png
 
 # Lock files
 uv.lock
+
+# gemini
+GEMINI.md
