@@ -54,17 +54,26 @@ def generate_dream_image_and_plan(dream: str = "成为一名畅销书作家", im
         contents=[prompt, image],
     )
 
-    return response
+    response_text = ""
+    response_image = None
+    for part in response.candidates[0].content.parts:
+        if part.text is not None:
+            response_text += part.text
+        elif part.inline_data is not None:
+            response_image = Image.open(BytesIO(part.inline_data.data))
+        else:
+            continue
+
+    return response_text, response_image
 
 if __name__ == "__main__":
     dream = "成为一名畅销书作家"
-    image_path = "me.png"  # 替换为你的图片路径
-    response = generate_dream_image_and_plan(dream, image_path)
+    image_path = "uploads/cai.jpg"  # 替换为你的图片路径
+    response_text, response_image = generate_dream_image_and_plan(dream, image_path)
     
-    for part in response.candidates[0].content.parts:
-        if part.text is not None:
-            print(part.text)
-        elif part.inline_data is not None:
-            image = Image.open(BytesIO(part.inline_data.data))
-            # save the image with uuid as filename
-            image.save("generated_image_{}.png".format(uuid.uuid4()))
+    # print the response text
+    print("Generated Text:\n", response_text)
+
+    # save the response image with a unique filename
+    if response_image is not None:
+        response_image.save("generated_image_{}.png".format(uuid.uuid4()))

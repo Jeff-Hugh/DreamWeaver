@@ -60,22 +60,14 @@ def generate_dream():
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     request.files['photo'].save(filepath)
 
-    response = generate.generate_dream_image_and_plan(dream, filepath)
-    generated_text = ""
+    generated_text, generated_image = generate.generate_dream_image_and_plan(dream, filepath)
+    
     image_filename = ""
+    if generated_image:
+        image_filename = "generated_image_{}.png".format(uuid.uuid4())
+        generated_image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
 
-    for part in response.candidates[0].content.parts:
-        if part.text is not None:
-            generated_text = part.text
-        elif part.inline_data is not None:
-            image = Image.open(BytesIO(part.inline_data.data))
-            # save the image with uuid as filename
-            image_filename = "generated_image_{}.png".format(uuid.uuid4())
-            image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
-        elif part.text is None and part.inline_data is None:
-            continue 
-
-    if response:
+    if generated_text:
         return render_template('DreamViewer.html', name=name, generated_text=generated_text, image_filename=image_filename)
     else:
         return jsonify({'error': 'Something went wrong'}), 500
