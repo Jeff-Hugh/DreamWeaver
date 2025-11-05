@@ -60,14 +60,9 @@ def generate_dream():
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     request.files['photo'].save(filepath)
 
-    generated_text, generated_image = generate.generate_dream_image_and_plan(dream, filepath)
+    generated_text, image_filename = generate.generate_dream_image_and_plan_qwen(dream, filepath)
     
-    image_filename = ""
-    if generated_image:
-        image_filename = "generated_image_{}.png".format(uuid.uuid4())
-        generated_image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
-
-    if generated_text:
+    if generated_text and image_filename:
         return render_template('DreamViewer.html', name=name, generated_text=generated_text, image_filename=image_filename)
     else:
         return jsonify({'error': 'Something went wrong'}), 500

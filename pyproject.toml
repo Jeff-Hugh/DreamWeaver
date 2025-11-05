@@ -13,5 +13,6 @@ dependencies = [
     "Pillow>=9.0.0",
     "requests",
     "webdavclient3",
-    "qrcode"
+    "qrcode",
+    "dashscope"
 ]
