@@ -27,4 +27,4 @@ jobs:
         # black_list: 'repo_name,repo_name2'
         # white_list: 'DreamWeaver'
 
-        force_push: true
+        force_update: true
