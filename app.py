@@ -81,10 +81,6 @@ def generate_dream():
         os.makedirs(app.config['UPLOAD_FOLDER'])
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     request.files['photo'].save(filepath)
-
-    # generated_text, image_filename = generate.generate_dream_image_and_plan_qwen(dream, filepath)
-    # generated_text, image_filename = generate.generate_dream_image_and_plan_doubao(dream, filepath)
-    # generated_text, image_filename = generate.generate_dream_image_and_plan(dream, filepath)
     
     api_service = request.form['api_service']
 
