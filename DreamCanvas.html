@@ -60,6 +60,26 @@
     <input type="file" id="photo-upload" name="photo" class="hidden" accept="image/*" required>
     <div class="mt-8 space-y-6">
         <div class="flex flex-col">
+    <label class="mb-2 font-semibold text-[var(--text-secondary)]" for="api_service">选择 API 服务</label>
+    {% if available_services %}
+    <select class="form-select w-full rounded-full border border-[var(--primary-color)]/30 bg-[var(--secondary-color)] px-4 py-3 text-[var(--text-primary)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]" id="api_service" name="api_service" required>
+        {% for service in available_services %}
+            {% if service == 'google' %}
+                <option value="google">Google Gemini Pro Vision</option>
+            {% elif service == 'qwen' %}
+                <option value="qwen">Qwen API</option>
+            {% elif service == 'doubao' %}
+                <option value="doubao">Doubao API</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    {% else %}
+    <div class="text-center p-4 rounded-lg bg-red-500/20 text-red-400">
+        <p>未找到可用的 API 服务。请在 <code>config.ini</code> 文件中填写至少一个 API Key。</p>
+    </div>
+    {% endif %}
+</div>
+        <div class="flex flex-col">
             <label class="mb-2 font-semibold text-[var(--text-secondary)]" for="name">你的名字</label>
             <input class="form-input w-full rounded-full border border-[var(--primary-color)]/30 bg-[var(--secondary-color)] px-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/50 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]" id="name" name="name" placeholder="例如, 张三" value="" required/>
         </div>

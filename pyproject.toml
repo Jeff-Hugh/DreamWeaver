@@ -3,7 +3,7 @@
 name = "dreamweaver"
 version = "0.1.0"
 requires-python = ">=3.9"
-description = "DreamWeaver application using Gemini API"
+description = "DreamWeaver application using Gemini, qwen"
 # Add to pyproject.toml
 dependencies = [
     "flask>=2.0.0",
@@ -14,5 +14,30 @@ dependencies = [
     "requests",
     "webdavclient3",
     "qrcode",
-    "dashscope"
+    "dashscope",
+    "volcengine-python-sdk[ark]",
+    "pyinstaller"
 ]
+
+[tool.pip]
+# Primary package index
+index-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+
+
+# Alternative configuration method using [[tool.pipy.source]] section
+# Uncomment if you want to use this approach instead
+
+# [[tool.pipy.source]]
+# name = "pypi"
+# url = "https://pypi.org/simple"
+# priority = "primary"
+
+# [[tool.pipy.source]]
+# name = "tsinghua"
+# url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+# priority = "supplemental"
+
+# [[tool.pipy.source]]
+# name = "alibaba"
+# url = "https://mirrors.aliyun.com/pypi/simple"
+# priority = "supplemental"

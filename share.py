@@ -4,7 +4,7 @@ from webdav3.client import Client
 import qrcode
 import xml.etree.ElementTree as ET # 用于解析 XML 响应
 import os
-from dotenv import load_dotenv
+from config import DEV_CONFIG
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
 import uuid
@@ -25,7 +25,6 @@ def create_composite_image(image_filename, text, name):
     padding = 40
     line_spacing = 15
     image_text_gap = 30
-    text_block_width = original_image.width # Initial text block width
     title_top_margin = 60
     title_bottom_margin = 40
 
@@ -37,7 +36,6 @@ def create_composite_image(image_filename, text, name):
         h1_font = ImageFont.truetype(font_path, font_size + 10)
         h2_font = ImageFont.truetype(font_path, font_size + 5)
         h3_font = ImageFont.truetype(font_path, font_size + 2)
-        title_font = ImageFont.truetype(font_path, font_size + 20) # Font for the new title
     except IOError:
         print("警告: 未找到 kaiti.ttf 字体。将使用默认字体。")
         font = ImageFont.load_default()
@@ -45,8 +43,6 @@ def create_composite_image(image_filename, text, name):
         h1_font = ImageFont.load_default()
         h2_font = ImageFont.load_default()
         h3_font = ImageFont.load_default()
-        title_font = ImageFont.load_default()
-
 
     fonts = {
         'p': font,
@@ -123,22 +119,56 @@ def create_composite_image(image_filename, text, name):
 
         return y - start_y
 
-    # --- Calculate Text Height ---
+    # --- Iteratively determine layout ---
+    text_block_width = original_image.width  # Initial guess
+
+    for _ in range(3):  # Iterate 3 times to stabilize
+        dummy_draw = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+        text_height_for_content = render_and_calculate_text_height(dummy_draw, text, 0, 0, text_block_width, render=False)
+        
+        image_height = text_height_for_content + padding * 2
+
+        if original_image.height > 0:
+            image_width = int(original_image.width * (image_height / original_image.height))
+        else:
+            image_width = original_image.width
+
+        text_block_width = int(image_width * 1.2 - image_text_gap)
+
+    # --- Final dimensions after iteration ---
     dummy_draw = ImageDraw.Draw(Image.new("RGB", (1, 1)))
     text_height = render_and_calculate_text_height(dummy_draw, text, 0, 0, text_block_width, render=False)
-    text_height += padding * 2
-
-    # --- Resize Image to Match Text Height ---
-    image_height = text_height
-    image_width = int(original_image.width * (image_height / original_image.height))
+    image_height = text_height + padding * 2
+    if original_image.height > 0:
+        image_width = int(original_image.width * (image_height / original_image.height))
+    else:
+        image_width = original_image.width
+    
     resized_image = original_image.resize((image_width, int(image_height)), Image.LANCZOS)
 
-    # --- Calculate Title Size ---
+    # --- Calculate Title Size and adjust font to meet height constraint ---
     title_text = f"{name}，你的梦想一定可以实现，加油吧！"
+    title_font_size = font_size + 20
+    title_total_height = 0
+    title_height = 0
+
+    while title_font_size > 10:
+        try:
+            title_font = ImageFont.truetype(font_path, title_font_size)
+        except IOError:
+            title_font = ImageFont.load_default()
+
+        title_bbox = title_font.getbbox(title_text)
+        title_height = title_bbox[3] - title_bbox[1]
+        title_total_height = title_top_margin + title_height + title_bottom_margin
+        
+        if title_total_height <= image_height * 0.2 + padding:
+            break
+        
+        title_font_size -= 2
+    
     title_bbox = title_font.getbbox(title_text)
     title_width = title_bbox[2] - title_bbox[0]
-    title_height = title_bbox[3] - title_bbox[1]
-    title_total_height = title_top_margin + title_height + title_bottom_margin
 
     # --- Create Composite Image ---
     final_width = image_width + text_block_width + image_text_gap + padding * 2
@@ -172,9 +202,9 @@ def share(filename):
     load_dotenv()
 
     # 1. 配置Nextcloud信息
-    webdav_url = os.getenv("WEBDAV_URL")
-    username = os.getenv("APP_USERNAME")
-    app_password = os.getenv("APP_PASSWORD")
+    webdav_url = DEV_CONFIG.get("WEBDAV_URL")
+    username = DEV_CONFIG.get("APP_USERNAME")
+    app_password = DEV_CONFIG.get("APP_PASSWORD")
 
     local_file_path = "uploads/{}".format(filename)  # 图片在Nextcloud中的存储路径
 
