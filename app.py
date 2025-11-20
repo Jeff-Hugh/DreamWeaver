@@ -14,6 +14,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+import sys
 import generate
 import share
 from flask import Flask, request, render_template, redirect, url_for, jsonify, send_from_directory
@@ -123,7 +124,7 @@ if __name__ == '__main__':
     for file in required_files:
         if not os.path.exists(file):
             print(f"Missing required file: {file}")
-            exit(1)
+            sys.exit(1)
     
     Timer(1, open_browser).start()
     app.run(debug=False, port=5001, host='127.0.0.1')
