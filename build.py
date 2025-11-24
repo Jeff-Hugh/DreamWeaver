@@ -23,15 +23,16 @@ def get_data_files():
         'DreamViewer.html',
         'kaiti.ttf'
     ]
-    return [f'{src}{os.pathsep}.' for src in data_files]
+    # On Windows, use semicolon as separator; on Unix-like systems, use colon
+    separator = ';' if os.name == 'nt' else ':'
+    return [f'{src}{separator}.' for src in data_files]
 
 if __name__ == '__main__':
     # Basic PyInstaller arguments
     args = [
         'app.py',
         '--name=DreamWeaver',
-        '--onefile',
-        '--windowed', # Use --windowed for GUI apps, equivalent to --noconsole
+        '--onefile'
     ]
 
     # Add data files

@@ -24,7 +24,17 @@ from io import BytesIO
 import uuid
 
 app = Flask(__name__, template_folder='.')
-app.config['UPLOAD_FOLDER'] = 'uploads'
+
+# Determine the base directory for uploads
+if getattr(sys, 'frozen', False):
+    # PyInstaller 打包后的环境，使用二进制文件所在目录
+    base_dir = os.path.dirname(sys.executable)
+else:
+    # 开发环境，使用当前工作目录
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+app.config['UPLOAD_FOLDER'] = os.path.join(base_dir, 'uploads')
+
 # Create the uploads directory if it doesn't exist
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
@@ -120,11 +130,14 @@ def open_browser():
 if __name__ == '__main__':
     config.init_config()
     # 确保所有必需的模板文件都存在
-    required_files = ['Home.html', 'DreamCanvas.html', 'DreamViewer.html']
-    for file in required_files:
-        if not os.path.exists(file):
-            print(f"Missing required file: {file}")
-            sys.exit(1)
-    
+    # 在 PyInstaller 环境中，文件会被解压到临时目录，所以不需要预先检查
+    if not getattr(sys, 'frozen', False):
+        # 只在非 PyInstaller 环境中检查文件
+        required_files = ['Home.html', 'DreamCanvas.html', 'DreamViewer.html']
+        for file in required_files:
+            if not os.path.exists(file):
+                print(f"Missing required file: {file}")
+                sys.exit(1)
+
     Timer(1, open_browser).start()
     app.run(debug=False, port=5001, host='127.0.0.1')
